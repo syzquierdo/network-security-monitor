@@ -1,18 +1,19 @@
-
 import subprocess
 import re
 from datetime import datetime
 
 
 def ping_device(ip_address):
-    result = subprocess.run(
+    result = subprocess.run
         ["ping", "-c", "1", ip_address],
         capture_output=True,
         text=True
     )
 
-    status = "UP" if result.returncode == 0 else "DOWN"
+
+    status == "UP" if result.returncode == 0 else "DOWN"
     latency = None
+
 
     if status == "UP":
         match = re.search(r"time[=<]([\d.]+) ms", result.stdout)
@@ -21,19 +22,18 @@ def ping_device(ip_address):
             latency = float(match.group(1))
 
     return {
-        "ip_address": ip_address,
-        "status": status,
-        "latency_ms": latency,
-        "timestamp": datetime.now().isoformat()
-    }
+         "ip address":ip_address,
+         "status": status,
+         "latency_ms": latency,
+         "timestamp": datetime.now().isoformat()
+      }
 
-
-devices = [
+  devices = [
     "127.0.0.1",
     "192.168.1.1",
     "192.168.1.46"
 ]
-
 for device_ip in devices:
     result = ping_device(device_ip)
     print(result)
+
