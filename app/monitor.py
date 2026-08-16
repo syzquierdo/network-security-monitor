@@ -34,6 +34,11 @@ devices = [
     "192.168.1.46"
 ]
 
-for device_ip in devices:
-    result = ping_device(device_ip)
-    print(result)
+
+def monitor_all_devices():
+    results = []
+
+    for device_ip in devices:
+        results.append(ping_device(device_ip))
+
+    return results
