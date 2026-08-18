@@ -27,18 +27,45 @@ def ping_device(ip_address):
         "timestamp": datetime.now().isoformat()
     }
 
-
 devices = [
-    "127.0.0.1",
-    "192.168.1.1",
-    "192.168.1.46"
+      {
+        "ip_address": "127.0.0.1",
+        "name": "Localhost",
+        "trusted": True
+    },
+    {
+        "ip_address": "192.168.1.1",
+        "name": "Router",
+        "trusted": True
+    },
+    {
+        "ip_address": "192.168.1.46",
+        "name": "Raspberry Pi",
+        "trusted": True
+    },
+    {
+        "ip_address": "192.168.1.250",
+        "name": "Unknown Test Device",
+        "trusted": False
+    }
 ]
+
 
 
 def monitor_all_devices():
     results = []
 
-    for device_ip in devices:
-        results.append(ping_device(device_ip))
+    for device in devices:
+        result = ping_device(device["ip_address"])
+
+        result["name"] = device["name"]
+        result["trusted"] = device["trusted"]
+
+        if device["trusted"]:
+            result["security_status"] = "TRUSTED"
+        else:
+            result["security_status"] = "UNKNOWN_DEVICE"
+
+        results.append(result)
 
     return results
