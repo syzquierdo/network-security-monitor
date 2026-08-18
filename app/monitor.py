@@ -1,8 +1,13 @@
-
+import logging
 import subprocess
 import re
 from datetime import datetime
 
+logging.basicConfig(
+    filename="security_events.log",
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s"
+)
 
 def ping_device(ip_address):
     result = subprocess.run(
@@ -61,10 +66,25 @@ def monitor_all_devices():
         result["name"] = device["name"]
         result["trusted"] = device["trusted"]
 
-        if device["trusted"]:
-            result["security_status"] = "TRUSTED"
-        else:
+        if not device["trusted"]:
             result["security_status"] = "UNKNOWN_DEVICE"
+            logging.critical(
+                f'Unknown device detected: {device["ip_address"]}'
+            )
+
+        elif result["status"] == "DOWN":
+            result["security_status"] = "TRUSTED_DEVICE_DOWN"
+            logging.warning(
+                f'Trusted device offline: {device["name"]} '
+                f'({device["ip_address"]})'
+            )
+
+        else:
+            result["security_status"] = "TRUSTED"
+            logging.info(
+                f'Trusted device online: {device["name"]} '
+                f'({device["ip_address"]})'
+            )
 
         results.append(result)
 

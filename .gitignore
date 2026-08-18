@@ -1,3 +1,4 @@
+security_events.log
 __pycache__/
 *.pyc
 .env
