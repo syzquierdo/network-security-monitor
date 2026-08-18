@@ -1,7 +1,9 @@
-import logging
 import subprocess
 import re
 from datetime import datetime
+import logging
+
+
 
 logging.basicConfig(
     filename="security_events.log",
@@ -32,6 +34,19 @@ def ping_device(ip_address):
         "timestamp": datetime.now().isoformat()
     }
 
+def discover_devices(network="192.168.1.0/24"):
+    result = subprocess.run(
+        ["nmap", "-sn", network],
+        capture_output=True,
+        text=True
+    )
+
+    discovered_ips = re.findall(
+        r"Nmap scan report for (\d+\.\d+\.\d+\.\d+)",
+        result.stdout
+    )
+
+    return discovered_ips
 devices = [
       {
         "ip_address": "127.0.0.1",
@@ -54,7 +69,25 @@ devices = [
         "trusted": False
     }
 ]
+def detect_unknown_devices():
+    discovered_ips = discover_devices()
 
+    trusted_ips = {
+        device["ip_address"]
+        for device in devices
+        if device["trusted"]
+    }
+
+    unknown_devices = []
+
+    for ip_address in discovered_ips:
+        if ip_address not in trusted_ips:
+            unknown_devices.append(ip_address)
+            logging.critical(
+                f"Unknown live device detected: {ip_address}"
+            )
+
+    return unknown_devices
 
 
 def monitor_all_devices():
@@ -89,3 +122,4 @@ def monitor_all_devices():
         results.append(result)
 
     return results
+
